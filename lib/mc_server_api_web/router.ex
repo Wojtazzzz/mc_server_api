@@ -18,6 +18,7 @@ defmodule McServerApiWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :home
+    post "/status", PageController, :status
   end
 
   # Other scopes may use custom stacks.

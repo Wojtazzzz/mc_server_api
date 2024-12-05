@@ -5,16 +5,29 @@
       <nav>
         <ul class="flex space-x-2 sm:space-x-4 font-medium">
           <li>
-            <a href="https://artlist.dev/" class="hover:underline a11y-keybord-focus rounded-lg">Lista serwerów</a>
+            <a href="https://artlist.dev/" class="hover:underline a11y-keybord-focus rounded-lg">
+              Lista serwerów
+            </a>
           </li>
           <li>
             <a href="#" class="hover:underline a11y-keybord-focus rounded-lg">GitHub</a>
           </li>
           <li>
-            <a href="https://www.figma.com/community/file/1131678279010246721/minecraft" class="hover:underline a11y-keybord-focus rounded-lg">Figma</a>
+            <a
+              href="https://www.figma.com/community/file/1131678279010246721/minecraft"
+              class="hover:underline a11y-keybord-focus rounded-lg"
+            >
+              Figma
+            </a>
           </li>
           <li>
-            <a href="https://mcsrvstat.us/" target="_blank" class="hover:underline a11y-keybord-focus rounded-lg">API v1</a>
+            <a
+              href="https://mcsrvstat.us/"
+              target="_blank"
+              class="hover:underline a11y-keybord-focus rounded-lg"
+            >
+              API v1
+            </a>
           </li>
         </ul>
       </nav>
@@ -28,17 +41,24 @@
       <p class="mt-2 mb-3 text-lg">
         Sprawdź status dowolnego serwera.
       </p>
-      <form class="flex flex-col items-center lg:items-start w-full lg:w-3/4">
+      <form
+        class="flex flex-col items-center lg:items-start w-full lg:w-3/4"
+        method="post"
+        action="/status"
+      >
+        <input type="hidden" name="_csrf_token" value={get_csrf_token()} />
         <input
           type="text"
+          name="ip"
+          aria-label="Adres IP"
           placeholder="hypixel.net"
           class="mt-6 w-full max-w-[420px] lg:max-w-none text-lg inline-block bg-gradient-to-r from-[#5217D1] to-[#1740D1] text-white px-6 py-3 rounded-lg tracking-wide font-semibold placeholder:text-gray-200/90 a11y-keybord-focus"
         />
         <button
           href="#"
-          class="w-32 mt-6 inline-block bg-gradient-to-r from-[#5217D1] to-[#1740D1] text-white px-6 py-3 rounded-lg font-medium hover:opacity-80 a11y-keybord-focus"
+          class="w-fit mt-6 text-wrap inline-block bg-gradient-to-r from-[#5217D1] to-[#1740D1] font-semibold text-white px-6 py-3 rounded-lg hover:opacity-80 a11y-keybord-focus"
         >
-          Szukaj
+          Pokaż status
         </button>
       </form>
     </div>

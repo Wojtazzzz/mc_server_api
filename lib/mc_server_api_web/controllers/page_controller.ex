@@ -1,9 +1,15 @@
 defmodule McServerApiWeb.PageController do
   use McServerApiWeb, :controller
 
+  alias McServerApi.McsrvstatClient
+
   def home(conn, _params) do
-    # The home page is often custom made,
-    # so skip the default app layout.
-    render(conn, :home, layout: false)
+    render(conn, :home, layout: false, server: Map.new())
+  end
+
+  def status(conn, %{"ip" => ip}) do
+    server = McsrvstatClient.call(ip)
+
+    render(conn, :home, layout: false, server: server)
   end
 end
