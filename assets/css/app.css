@@ -2,4 +2,8 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
-/* This file is for your main application CSS */
+@layer base {
+    .a11y-keybord-focus {
+        @apply focus-visible:outline-dashed focus-visible:outline-[#6d4db4] focus-visible:outline-offset-[6px] focus-visible:outline-[3px]
+    }
+}
