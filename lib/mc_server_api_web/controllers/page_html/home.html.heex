@@ -1,9 +1,9 @@
 <div class="bg-black text-white flex flex-col lg:flex-row h-screen">
   <div class="lg:w-1/2 flex flex-col justify-between px-8 py-6">
-    <header class="flex justify-between items-center">
+    <header class="flex justify-between items-center flex-wrap gap-y-4 text-nowrap">
       <h1 class="text-2xl font-bold">ArtList.dev</h1>
       <nav>
-        <ul class="flex space-x-4 font-medium">
+        <ul class="flex space-x-2 sm:space-x-4 font-medium">
           <li><a href="https://artlist.dev/" class="hover:underline">Lista serwerów</a></li>
           <li><a href="#" class="hover:underline">GitHub</a></li>
           <li><a href="https://www.figma.com/community/file/1131678279010246721/minecraft" class="hover:underline">Figma</a></li>
@@ -14,30 +14,30 @@
       </nav>
     </header>
 
-    <div class="text-center lg:text-left">
+    <div class="text-center lg:text-left mt-8 lg:mt-0">
       <h2 class="text-8xl font-extrabold">
-        <span class="text-purple-500">ART</span>
+        <span class="text-[#5217D1]">ART</span>
         <span class="text-white -ml-4">LIST</span>
       </h2>
       <p class="mt-2 mb-3 text-lg">
         Sprawdź status dowolnego serwera.
       </p>
-      <form class="flex flex-col w-3/4">
+      <form class="flex flex-col items-center lg:items-start w-full lg:w-3/4">
         <input
           type="text"
           placeholder="hypixel.net"
-          class="mt-6 text-lg inline-block bg-gradient-to-r from-purple-500 to-blue-500 text-white px-6 py-3 rounded-lg tracking-wide font-semibold placeholder:text-gray-200/90"
+          class="mt-6 w-full max-w-[420px] lg:max-w-none text-lg inline-block bg-gradient-to-r from-[#5217D1] to-[#1740D1] text-white px-6 py-3 rounded-lg tracking-wide font-semibold placeholder:text-gray-200/90"
         />
         <button
           href="#"
-          class="w-32 mt-6 inline-block bg-gradient-to-r from-purple-500 to-blue-500 text-white px-6 py-3 rounded-lg font-medium hover:opacity-80"
+          class="w-32 mt-6 inline-block bg-gradient-to-r from-[#5217D1] to-[#1740D1] text-white px-6 py-3 rounded-lg font-medium hover:opacity-80"
         >
           Szukaj
         </button>
       </form>
     </div>
 
-    <footer class="text-sm mt-6 text-gray-400">
+    <footer class="text-sm mt-12 lg:mt-6 text-gray-400">
       © 2024 ArtList.dev
     </footer>
   </div>
@@ -50,6 +50,6 @@
         class="w-full h-full object-cover"
       />
     </div>
-    <div class="absolute inset-0 bg-blue-900 opacity-50"></div>
+    <div class="absolute inset-0 bg-[#5217D1] opacity-30"></div>
   </div>
 </div>
