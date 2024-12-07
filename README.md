@@ -1,18 +1,33 @@
-# McServerApi
+<!-- PROJECT LOGO -->
+<br />
+<div align="center">
+  <a href="https://github.com/othneildrew/Best-README-Template">
+    <img src="https://hexdocs.pm/phoenix/assets/logo.png" alt="Logo" width="64" height="48">
+  </a>
+  <h3 align="center">McServerApi</h3>
+  <span align="center">
+    Check status of any Minecraft server!
+    <br />
+    <a href="https://github.com/Wojtazzzz/mc_server_api/">View Code</a>
+    ·
+    <a href="https://github.com/Wojtazzzz/mc_server_api/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
+    ·
+    <a href="https://github.com/Wojtazzzz/mc_server_api/compare">Create Pull Request</a>
+  </p>
+</div>
 
-To start your Phoenix server:
+<!-- BUILT WITH -->
+### Built With
 
-  * Run `mix setup` to install and setup dependencies
-  * Start Phoenix endpoint with `mix phx.server` or inside IEx with `iex -S mix phx.server`
+This section should list any major frameworks/libraries used to bootstrap your project. Leave any add-ons/plugins for the acknowledgements section. Here are a few examples.
 
-Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
+* [Elixir](https://elixir-lang.org/)
+* [Phoenix Framework](https://www.phoenixframework.org/)
+* [Tailwind](https://tailwindcss.com/)
 
-Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-## Learn more
+<!-- ABOUT THE PROJECT -->
+## About The Project
 
-  * Official website: https://www.phoenixframework.org/
-  * Guides: https://hexdocs.pm/phoenix/overview.html
-  * Docs: https://hexdocs.pm/phoenix
-  * Forum: https://elixirforum.com/c/phoenix-forum
-  * Source: https://github.com/phoenixframework/phoenix
+![page view with server status](priv/static/images/readme/page-view-with-server-status.png)
