@@ -88,5 +88,17 @@
       />
     </div>
     <div class="absolute inset-0 bg-[#5217D1] opacity-30"></div>
+
+    <div class="relative z-40 w-full h-full flex justify-center items-center overflow-x-auto">
+      <%= if @server do %>
+        <div class="min-w-96 h-auto">
+          <pre class="rounded-lg bg-black/70 text-white overflow-x-auto px-8 py-4 text-sm">
+            <code>
+              <%= Jason.Formatter.pretty_print(Jason.encode!(@server)) %>
+            </code>
+          </pre>
+        </div>
+      <% end %>
+    </div>
   </div>
 </div>

@@ -4,7 +4,7 @@ defmodule McServerApiWeb.PageController do
   alias McServerApi.McsrvstatClient
 
   def home(conn, _params) do
-    render(conn, :home, layout: false, server: Map.new())
+    render(conn, :home, layout: false, server: nil)
   end
 
   def status(conn, %{"ip" => ip}) do
