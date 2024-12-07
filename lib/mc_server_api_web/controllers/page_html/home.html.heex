@@ -75,7 +75,7 @@
     </div>
 
     <footer class="text-sm mt-12 lg:mt-6 text-gray-400">
-      © <%= Date.utc_today() |> Date.to_string() |> String.slice(0, 4) %>
+      © <%= Date.utc_today() |> Date.to_string() |> String.slice(0, 4) %>ds
       ArtList.dev
     </footer>
   </div>
@@ -93,7 +93,7 @@
     <div class="relative z-40 w-full h-full flex justify-center items-center overflow-x-auto">
       <%= if @server do %>
         <div class="min-w-96 h-auto">
-          <pre class="h-fit rounded-lg bg-black/70 text-white overflow-x-auto px-8 pt-4 text-sm md:text-base">
+          <pre class="h-fit rounded-lg bg-black/70 text-white overflow-x-auto m-3 md:m-8 px-8 pt-4 text-sm md:text-base">
             <code>
               <%= Jason.Formatter.pretty_print(Jason.encode!(@server)) %>
             </code>
