@@ -54,13 +54,13 @@
       </p>
       <form
         class="flex flex-col items-center lg:items-start w-full lg:w-3/4"
-        method="post"
-        action="/status"
+        method="get"
+        action="/"
       >
-        <input type="hidden" name="_csrf_token" value={get_csrf_token()} />
         <input
           type="text"
           name="ip"
+          value={@query}
           aria-label="Adres IP"
           placeholder="hypixel.net"
           class="mt-6 w-full max-w-[420px] lg:max-w-none text-lg inline-block bg-gradient-to-r from-[#5217D1] to-[#1740D1] text-white px-6 py-3 rounded-lg tracking-wide font-semibold placeholder:text-gray-200/90 a11y-keybord-focus"
@@ -92,7 +92,7 @@
     <div class="relative z-40 w-full h-full flex justify-center items-center overflow-x-auto">
       <%= if @server do %>
         <div class="min-w-96 h-auto">
-          <pre class="rounded-lg bg-black/70 text-white overflow-x-auto px-8 py-4 text-sm">
+          <pre class="h-fit rounded-lg bg-black/70 text-white overflow-x-auto px-8 pt-4 text-sm md:text-base">
             <code>
               <%= Jason.Formatter.pretty_print(Jason.encode!(@server)) %>
             </code>

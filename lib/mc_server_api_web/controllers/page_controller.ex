@@ -3,13 +3,13 @@ defmodule McServerApiWeb.PageController do
 
   alias McServerApi.McsrvstatClient
 
-  def home(conn, _params) do
-    render(conn, :home, layout: false, server: nil)
-  end
+  def home(conn, params) do
+    ip = Map.get(params, "ip", "")
 
-  def status(conn, %{"ip" => ip}) do
-    server = McsrvstatClient.call(ip)
+    server = if (String.length(ip) > 0) do
+      McsrvstatClient.call(ip)
+    end
 
-    render(conn, :home, layout: false, server: server)
+    render(conn, :home, layout: false, query: ip, server: server)
   end
 end
