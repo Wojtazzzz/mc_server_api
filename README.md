@@ -7,7 +7,7 @@
   </a>
   <h3 align="center">McServerApi</h3>
   <span align="center">
-    Check status of any Minecraft server!
+    Check the status of any Minecraft server!
     <br />
     <a href="https://github.com/Wojtazzzz/mc_server_api/">View Code</a>
     ·
