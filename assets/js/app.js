@@ -42,3 +42,29 @@ liveSocket.connect()
 // >> liveSocket.disableLatencySim()
 window.liveSocket = liveSocket
 
+let status = 'IDLE';
+let timeout = null;
+
+const copyStatusButton = document.querySelector('#copy-status-button');
+const copyStatusButtonSvgs = copyStatusButton.querySelectorAll('svg');
+const statusCode = document.querySelector('#status-code');
+
+copyStatusButton?.addEventListener('click', async () => {
+  if (status !== 'IDLE') {
+    return;
+  }
+
+  await navigator.clipboard.writeText(statusCode.innerText);
+
+  copyStatusButtonSvgs[0]?.classList.add('hidden');
+  copyStatusButtonSvgs[1]?.classList.remove('hidden');
+
+  clearTimeout(timeout);
+
+  timeout = setTimeout(() => {
+    copyStatusButtonSvgs[0]?.classList.remove('hidden');
+    copyStatusButtonSvgs[1]?.classList.add('hidden');
+
+    status = 'IDLE';
+  }, 1600);
+});
