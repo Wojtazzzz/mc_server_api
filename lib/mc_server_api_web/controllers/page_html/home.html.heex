@@ -75,7 +75,8 @@
     </div>
 
     <footer class="text-sm mt-12 lg:mt-6 text-gray-400">
-      © 2024 ArtList.dev
+      © <%= Date.utc_today() |> Date.to_string() |> String.slice(0, 4) %>
+      ArtList.dev
     </footer>
   </div>
 
