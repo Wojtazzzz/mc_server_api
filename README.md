@@ -29,7 +29,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-![page view with server status](priv/static/images/readme/page-view-with-server-status.png)
+![Server Api page showing the status of a Minecraft server](priv/static/images/readme/page_screen.png)
 
 <!-- API -->
 ## API
