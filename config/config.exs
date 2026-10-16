@@ -7,6 +7,8 @@
 # General application configuration
 import Config
 
+config :mc_server_api, :status_client, McServerApi.Ping.Client
+
 config :mc_server_api,
   generators: [timestamp_type: :utc_datetime]
 

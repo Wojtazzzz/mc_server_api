@@ -46,7 +46,7 @@ let status = 'IDLE';
 let timeout = null;
 
 const copyStatusButton = document.querySelector('#copy-status-button');
-const copyStatusButtonSvgs = copyStatusButton.querySelectorAll('svg');
+const copyStatusButtonSvgs = copyStatusButton?.querySelectorAll('svg') ?? [];
 const statusCode = document.querySelector('#status-code');
 
 copyStatusButton?.addEventListener('click', async () => {
@@ -67,4 +67,20 @@ copyStatusButton?.addEventListener('click', async () => {
 
     status = 'IDLE';
   }, 1600);
+});
+
+const statusDialog = document.querySelector('#status-dialog');
+const statusDialogCode = document.querySelector('#status-dialog-code');
+
+document.querySelector('#fullscreen-status-button')?.addEventListener('click', () => {
+  statusDialogCode.textContent = statusCode.textContent.trim();
+  statusDialog.showModal();
+});
+
+document.querySelector('#close-status-dialog')?.addEventListener('click', () => statusDialog.close());
+
+statusDialog?.addEventListener('click', (event) => {
+  if (event.target === statusDialog) {
+    statusDialog.close();
+  }
 });

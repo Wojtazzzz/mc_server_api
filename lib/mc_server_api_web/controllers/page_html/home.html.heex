@@ -1,118 +1,436 @@
-<div class="bg-black text-white flex flex-col lg:flex-row h-screen">
-  <div class="lg:w-1/2 flex flex-col justify-between px-8 py-6">
-    <header class="flex justify-between items-center flex-wrap gap-y-4 text-nowrap">
-      <h1 class="text-2xl font-bold">ArtList.dev</h1>
-      <nav>
-        <ul class="flex space-x-2 sm:space-x-4 font-medium">
-          <li>
-            <a
-              href="https://artlist.dev/"
-              target="_blank"
-              class="hover:underline a11y-keybord-focus rounded-lg"
+<div class="min-h-screen bg-black text-white">
+  <%!-- Header --%>
+  <header class="relative z-20 mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-6 py-5">
+    <a href={~p"/"} class="text-2xl font-extrabold tracking-tight">
+      <span>Server</span> <span class="text-[#A78BFA]">Api</span>
+    </a>
+    <nav>
+      <ul class="flex flex-wrap gap-x-6 gap-y-2 text-sm font-medium text-gray-300">
+        <li>
+          <a
+            href="https://craftradar.pl/"
+            target="_blank"
+            rel="noopener"
+            title="CraftRadar — Minecraft server list and ranking"
+            class="hover:text-white"
+          >
+            Server list
+          </a>
+        </li>
+        <li><a href={~p"/api/docs"} class="hover:text-white">API</a></li>
+        <li>
+          <a
+            href="https://github.com/Wojtazzzz/mc_server_api"
+            target="_blank"
+            class="hover:text-white"
+          >
+            GitHub
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </header>
+
+  <%!-- Hero with search --%>
+  <section class="relative -mt-[76px] overflow-hidden pt-[76px]">
+    <img
+      src={~p"/images/background.png"}
+      alt=""
+      class="absolute inset-0 h-full w-full object-cover opacity-40 blur-[2px]"
+    />
+    <div class="absolute inset-0 bg-gradient-to-b from-[#5217D1]/60 via-[#1740D1]/30 to-black">
+    </div>
+
+    <div class="relative mx-auto max-w-3xl px-6 pb-28 pt-16 text-center">
+      <h1 class="text-4xl font-extrabold tracking-tight sm:text-6xl">
+        Check any Minecraft server's status
+      </h1>
+      <p class="mt-4 text-lg text-gray-200">
+        Players, version, ping, premium or cracked, Bedrock and network details — straight from the server, no middleman.
+      </p>
+
+      <form method="get" action={~p"/"} class="mt-10">
+        <div class="rounded-2xl bg-gradient-to-r from-[#5217D1] to-[#1740D1] p-[2px] shadow-[0_0_60px_-10px_#5217D1]">
+          <div class="flex flex-col gap-2 rounded-[14px] bg-black/90 p-2 sm:flex-row">
+            <input
+              type="text"
+              name="ip"
+              value={@query}
+              aria-label="Server address"
+              placeholder="e.g. hypixel.net or play.example.com:25570"
+              class="w-full flex-1 border-0 bg-transparent px-4 py-3 text-lg text-white placeholder:text-gray-500 focus:ring-0"
+            />
+            <button class="rounded-xl bg-gradient-to-r from-[#5217D1] to-[#1740D1] px-6 py-3 font-semibold hover:opacity-90">
+              Check
+            </button>
+          </div>
+        </div>
+      </form>
+
+      <div class="mt-5 flex flex-wrap justify-center gap-2 text-sm">
+        <span class="text-gray-400">Try:</span>
+        <a
+          :for={example <- examples()}
+          href={~p"/?#{[ip: example]}"}
+          class="rounded-full border border-white/15 bg-white/5 px-3 py-1 text-gray-200 hover:border-[#5217D1] hover:text-white"
+        >
+          {example}
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <%!-- Result --%>
+  <main :if={@server} class="relative z-10 mx-auto -mt-16 max-w-6xl space-y-6 px-6 pb-20">
+    <%= if @server.online do %>
+      <% players = Map.get(@server, :players) || %{} %>
+      <% version = Map.get(@server, :version) || %{} %>
+      <% timings = Map.get(@server, :timings) %>
+      <% latency = timings && timings[:latency_ms] %>
+      <% network = Map.get(@server, :network) %>
+      <% bedrock = Map.get(@server, :bedrock) %>
+      <% {auth_title, auth_hint} = auth_label(Map.get(@server, :auth)) %>
+
+      <%!-- In-game style server row --%>
+      <article class="rounded-2xl border border-white/10 bg-[#0b0b12]/95 p-5 shadow-2xl backdrop-blur sm:p-6">
+        <div class="flex flex-col gap-5 sm:flex-row sm:items-center">
+          <img
+            :if={Map.get(@server, :favicon)}
+            src={@server.favicon}
+            alt="Server icon"
+            width="72"
+            height="72"
+            class="h-[72px] w-[72px] shrink-0 rounded-lg [image-rendering:pixelated]"
+          />
+          <div class="min-w-0 flex-1">
+            <div class="flex flex-wrap items-center gap-3">
+              <h2 class="truncate text-2xl font-bold">{Map.get(@server, :hostname) || @query}</h2>
+              <span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/15 px-2.5 py-0.5 text-xs font-semibold text-emerald-300">
+                <span class="h-1.5 w-1.5 rounded-full bg-emerald-400"></span> Online
+              </span>
+            </div>
+            <div class="mt-2 space-y-0.5 overflow-x-auto font-mono text-sm leading-relaxed text-gray-300">
+              <%= for line <- (Map.get(@server, :motd) || %{})[:html] || [] do %>
+                <p class="whitespace-pre">{raw(line)}</p>
+              <% end %>
+            </div>
+          </div>
+          <div class="flex shrink-0 items-center gap-4 sm:flex-col sm:items-end">
+            <div class="text-right">
+              <div class="text-3xl font-extrabold tabular-nums">
+                {format_number(players[:online])}
+              </div>
+              <div class="text-sm text-gray-400">of {format_number(players[:max])} slots</div>
+            </div>
+            <div
+              class="flex h-6 items-end gap-0.5"
+              title={if latency, do: "Ping #{latency} ms", else: "Ping not measured"}
             >
-              Lista serwerów
-            </a>
-          </li>
-          <li>
-            <a
-              href="https://github.com/Wojtazzzz/mc_server_api"
-              target="_blank"
-              class="hover:underline a11y-keybord-focus rounded-lg"
-            >
-              GitHub
-            </a>
-          </li>
-          <li>
-            <a
-              href="https://www.figma.com/community/file/1131678279010246721/minecraft"
-              target="_blank"
-              class="hover:underline a11y-keybord-focus rounded-lg"
-            >
-              Figma
-            </a>
-          </li>
-          <li>
-            <a
-              href="https://mcsrvstat.us/"
-              target="_blank"
-              class="hover:underline a11y-keybord-focus rounded-lg"
-            >
-              API v1
-            </a>
+              <span
+                :for={bar <- 1..5}
+                class={[
+                  "w-1.5 rounded-sm",
+                  bar <= signal_bars(latency) && "bg-gradient-to-t from-[#5217D1] to-[#3B82F6]",
+                  bar > signal_bars(latency) && "bg-white/15"
+                ]}
+                style={"height: #{bar * 20}%"}
+              >
+              </span>
+            </div>
+          </div>
+        </div>
+        <div class="mt-5 h-2 overflow-hidden rounded-full bg-white/10">
+          <div
+            class="h-full rounded-full bg-gradient-to-r from-[#5217D1] to-[#1740D1]"
+            style={"width: #{fill_percent(players)}%"}
+          >
+          </div>
+        </div>
+      </article>
+
+      <%!-- Key facts --%>
+      <section class="grid grid-cols-2 gap-3 md:grid-cols-4">
+        <div class="rounded-xl border border-white/10 bg-white/[0.03] p-4">
+          <div class="text-xs uppercase tracking-wider text-gray-400">Version</div>
+          <div class="mt-1 truncate text-lg font-semibold">
+            {version[:protocol_name] || version[:name_clean] || "—"}
+          </div>
+          <div :if={version[:range]} class="text-sm text-gray-400">
+            {version.range.oldest} – {version.range.newest}
+          </div>
+        </div>
+        <div class="rounded-xl border border-white/10 bg-white/[0.03] p-4">
+          <div class="text-xs uppercase tracking-wider text-gray-400">Ping</div>
+          <div class="mt-1 text-lg font-semibold tabular-nums">
+            {if latency, do: "#{latency} ms", else: "—"}
+          </div>
+          <div class="text-sm text-gray-400">measured by Server Api</div>
+        </div>
+        <div class="rounded-xl border border-white/10 bg-white/[0.03] p-4">
+          <div class="text-xs uppercase tracking-wider text-gray-400">Account</div>
+          <div class="mt-1 text-lg font-semibold">{auth_title}</div>
+          <div class="text-sm text-gray-400">{auth_hint}</div>
+        </div>
+        <div class="rounded-xl border border-white/10 bg-white/[0.03] p-4">
+          <div class="text-xs uppercase tracking-wider text-gray-400">Software</div>
+          <div class="mt-1 text-lg font-semibold">{Map.get(@server, :software) || "—"}</div>
+          <div class="text-sm text-gray-400">protocol {version[:protocol] || "—"}</div>
+        </div>
+        <div class="rounded-xl border border-white/10 bg-white/[0.03] p-4">
+          <div class="text-xs uppercase tracking-wider text-gray-400">Bedrock</div>
+          <div class="mt-1 text-lg font-semibold">
+            {cond do
+              bedrock && bedrock[:verified] -> "Yes"
+              bedrock -> "Possibly"
+              true -> "No"
+            end}
+          </div>
+          <div class="text-sm text-gray-400">
+            {if bedrock,
+              do: "#{bedrock[:version]} · port #{bedrock[:port]}",
+              else: "phones and consoles"}
+          </div>
+        </div>
+        <div class="rounded-xl border border-white/10 bg-white/[0.03] p-4">
+          <div class="text-xs uppercase tracking-wider text-gray-400">Mojang EULA</div>
+          <div class="mt-1 text-lg font-semibold">
+            {case Map.get(@server, :eula_blocked) do
+              true -> "Blocked"
+              false -> "Not blocked"
+              _ -> "—"
+            end}
+          </div>
+          <div class="text-sm text-gray-400">Mojang's blocklist</div>
+        </div>
+        <div class="rounded-xl border border-white/10 bg-white/[0.03] p-4">
+          <div class="text-xs uppercase tracking-wider text-gray-400">Address</div>
+          <div class="mt-1 truncate text-lg font-semibold">{Map.get(@server, :ip)}</div>
+          <div class="text-sm text-gray-400">port {Map.get(@server, :port)}</div>
+        </div>
+        <div class="rounded-xl border border-white/10 bg-white/[0.03] p-4">
+          <div class="text-xs uppercase tracking-wider text-gray-400">Hosting</div>
+          <div class="mt-1 truncate text-lg font-semibold">
+            {(network && network[:asn] && network.asn[:name]) || "—"}
+          </div>
+          <div class="text-sm text-gray-400">
+            {if network && network[:asn],
+              do: "AS#{network.asn.number} · #{network.asn.country}",
+              else: "unknown network"}
+          </div>
+        </div>
+      </section>
+
+      <div class="grid gap-6 lg:grid-cols-3">
+        <%!-- Network --%>
+        <section class="rounded-2xl border border-white/10 bg-white/[0.03] p-6 lg:col-span-2">
+          <h3 class="text-lg font-bold">Network &amp; DNS</h3>
+          <dl class="mt-4 grid gap-x-6 gap-y-3 text-sm sm:grid-cols-[auto_1fr]">
+            <%= for {label, value} <- [
+                  {"SRV record", Map.get(@server, :srv) && "#{@server.srv.target}:#{@server.srv.port}"},
+                  {"CNAME", network && network[:cname]},
+                  {"Reverse DNS", network && network[:reverse_dns]},
+                  {"IPv4 addresses", network && Enum.join(network[:ipv4] || [], ", ")},
+                  {"Network prefix", network && network[:asn] && network.asn.prefix}
+                ], value not in [nil, ""] do %>
+              <dt class="text-gray-400">{label}</dt>
+              <dd class="break-all font-mono text-gray-100">{value}</dd>
+            <% end %>
+          </dl>
+        </section>
+
+        <%!-- Links and players --%>
+        <section class="space-y-6 rounded-2xl border border-white/10 bg-white/[0.03] p-6">
+          <% links = Map.get(@server, :links) || %{} %>
+          <div>
+            <h3 class="text-lg font-bold">Links in the MOTD</h3>
+            <div class="mt-3 flex flex-wrap gap-2">
+              <a
+                :for={discord <- links[:discord] || []}
+                href={"https://#{discord}"}
+                target="_blank"
+                rel="noopener nofollow"
+                class="rounded-lg bg-[#5865F2] px-3 py-1.5 text-sm font-semibold hover:opacity-90"
+              >
+                Discord: {discord}
+              </a>
+              <a
+                :for={site <- links[:websites] || []}
+                href={"https://#{site}"}
+                target="_blank"
+                rel="noopener nofollow"
+                class="rounded-lg border border-white/15 px-3 py-1.5 text-sm hover:border-[#5217D1]"
+              >
+                {site}
+              </a>
+              <span
+                :if={(links[:discord] || []) == [] and (links[:websites] || []) == []}
+                class="text-sm text-gray-400"
+              >
+                The server lists no links in its MOTD.
+              </span>
+            </div>
+          </div>
+          <div>
+            <h3 class="text-lg font-bold">Players online (sample)</h3>
+            <ul class="mt-3 flex flex-wrap gap-2">
+              <li
+                :for={player <- players[:sample] || []}
+                class="flex items-center gap-2 rounded-lg bg-white/5 py-1 pl-1 pr-3 text-sm"
+              >
+                <img
+                  src={"https://mc-heads.net/avatar/#{player.name}/20"}
+                  alt=""
+                  width="20"
+                  height="20"
+                  loading="lazy"
+                  class="rounded [image-rendering:pixelated]"
+                />
+                {player.name}
+              </li>
+            </ul>
+            <p :if={(players[:sample] || []) == []} class="mt-3 text-sm text-gray-400">
+              The server hides its player list.
+            </p>
+          </div>
+        </section>
+      </div>
+
+      <%!-- Timings --%>
+      <section class="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
+        <div class="flex flex-wrap items-baseline justify-between gap-2">
+          <h3 class="text-lg font-bold">Request time</h3>
+          <span class="text-2xl font-extrabold tabular-nums">{@request_ms} ms</span>
+        </div>
+        <% segments = timing_segments(timings) %>
+        <% segments_total = Enum.sum(Enum.map(segments, &elem(&1, 1))) %>
+        <div :if={segments != []} class="mt-4 flex h-3 overflow-hidden rounded-full bg-white/10">
+          <div
+            :for={{label, value, class} <- segments}
+            class={class}
+            style={"width: #{if segments_total > 0, do: value / segments_total * 100, else: 0}%"}
+            title={"#{label}: #{value} ms"}
+          >
+          </div>
+        </div>
+        <ul class="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-sm text-gray-300">
+          <li :for={{label, value, class} <- segments} class="flex items-center gap-2">
+            <span class={["h-2.5 w-2.5 rounded-sm", class]}></span> {label}: {value} ms
           </li>
         </ul>
-      </nav>
-    </header>
+      </section>
 
-    <div class="text-center lg:text-left mt-8 lg:mt-0">
-      <h2 class="text-8xl font-extrabold">
-        <span class="text-[#5217D1]">ART</span>
-        <span class="text-white -ml-4">LIST</span>
-      </h2>
-      <p class="mt-2 mb-3 text-lg">
-        Sprawdź status dowolnego serwera.
-      </p>
-      <form
-        class="flex flex-col items-center lg:items-start w-full lg:w-3/4"
-        method="get"
-        action="/"
-      >
-        <input
-          type="text"
-          name="ip"
-          value={@query}
-          aria-label="Adres IP"
-          placeholder="hypixel.net"
-          class="mt-6 w-full max-w-[420px] lg:max-w-none text-lg inline-block bg-gradient-to-r from-[#5217D1] to-[#1740D1] text-white px-6 py-3 rounded-lg tracking-wide font-semibold placeholder:text-gray-200/90 a11y-keybord-focus"
-        />
-        <button
-          href="#"
-          class="w-fit mt-6 text-wrap inline-block bg-gradient-to-r from-[#5217D1] to-[#1740D1] font-semibold text-white px-6 py-3 rounded-lg hover:opacity-80 a11y-keybord-focus"
-        >
-          Pokaż status
-        </button>
-      </form>
-    </div>
-
-    <footer class="text-sm mt-12 lg:mt-6 text-gray-400">
-      © {Date.utc_today() |> Date.to_string() |> String.slice(0, 4)}ds
-      ArtList.dev
-    </footer>
-  </div>
-
-  <div class="lg:w-1/2 relative bg-black">
-    <div class="absolute inset-0">
-      <img
-        src={~p"/images/background.png"}
-        alt="Minecraft theme"
-        class="w-full h-full object-cover"
-      />
-    </div>
-    <div class="absolute inset-0 bg-[#5217D1] opacity-30"></div>
-
-    <div class="relative z-40 w-full h-full flex justify-center items-center overflow-x-hidden">
-      <%= if @server do %>
-        <div class="min-w-96 relative h-auto rounded-lg bg-black/80 text-white m-3 md:m-8 px-8 text-sm md:text-base overflow-x-auto">
-          <%= if @server.online do %>
-            <button id="copy-status-button" type="button" aria-label="Copy status to clipboard" title="Copy" class="w-6 h-6 absolute top-6 right-6">
-              <svg viewBox="0 0 24 24" class="w-6 h-6">
-                <path fill="currentColor" d="M19,21H8V7H19M19,5H8A2,2 0 0,0 6,7V21A2,2 0 0,0 8,23H19A2,2 0 0,0 21,21V7A2,2 0 0,0 19,5M16,1H4A2,2 0 0,0 2,3V17H4V3H16V1Z"></path>
-              </svg>
-              <svg viewBox="0 0 24 24" class="w-6 h-6 hidden">
-                <path fill="currentColor" d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"></path>
+      <%!-- Raw JSON --%>
+      <details class="group rounded-2xl border border-white/10 bg-white/[0.03]">
+        <summary class="flex cursor-pointer list-none items-center justify-between p-6 text-lg font-bold">
+          Raw JSON response
+          <span class="text-sm font-normal text-gray-400 group-open:hidden">expand</span>
+        </summary>
+        <div class="relative border-t border-white/10">
+          <div class="absolute right-4 top-4 flex gap-3">
+            <button
+              id="fullscreen-status-button"
+              type="button"
+              aria-label="Show the response full screen"
+              title="Full screen"
+              class="h-6 w-6"
+            >
+              <svg viewBox="0 0 24 24" class="h-6 w-6">
+                <path
+                  fill="currentColor"
+                  d="M5,5H10V7H7V10H5V5M14,5H19V10H17V7H14V5M17,14H19V19H14V17H17V14M10,17V19H5V14H7V17H10Z"
+                />
               </svg>
             </button>
-
-            <pre class="h-fit pt-5">
-                <code id="status-code">
-                  <%= @server |> Jason.encode! |> Jason.Formatter.pretty_print %>
-                </code>
-            </pre>
-          <% else %>
-            <div class="text-red-400 tracking-wide font-semibold py-5 text-lg">Podany serwer nie istnieje lub jest offline.</div>
-          <% end %>
+            <button
+              id="copy-status-button"
+              type="button"
+              aria-label="Copy response"
+              title="Copy"
+              class="h-6 w-6"
+            >
+              <svg viewBox="0 0 24 24" class="h-6 w-6">
+                <path
+                  fill="currentColor"
+                  d="M19,21H8V7H19M19,5H8A2,2 0 0,0 6,7V21A2,2 0 0,0 8,23H19A2,2 0 0,0 21,21V7A2,2 0 0,0 19,5M16,1H4A2,2 0 0,0 2,3V17H4V3H16V1Z"
+                />
+              </svg>
+              <svg viewBox="0 0 24 24" class="hidden h-6 w-6">
+                <path
+                  fill="currentColor"
+                  d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"
+                />
+              </svg>
+            </button>
+          </div>
+          <pre class="max-h-[32rem] overflow-auto p-6 text-sm"><code id="status-code"><%= @server |> Jason.encode!() |> Jason.Formatter.pretty_print() %></code></pre>
         </div>
-      <% end %>
+      </details>
+
+      <dialog
+        id="status-dialog"
+        aria-labelledby="status-dialog-title"
+        class="m-0 h-screen max-h-none w-screen max-w-none bg-black p-0 text-white backdrop:bg-black/80"
+      >
+        <div class="flex h-full flex-col">
+          <div class="flex items-center justify-between gap-4 border-b border-white/10 px-6 py-4">
+            <h2 id="status-dialog-title" class="font-semibold">
+              API response — {Map.get(@server, :hostname) || @query}
+            </h2>
+            <button
+              id="close-status-dialog"
+              type="button"
+              aria-label="Close"
+              title="Close (Esc)"
+              class="h-6 w-6"
+            >
+              <svg viewBox="0 0 24 24" class="h-6 w-6">
+                <path
+                  fill="currentColor"
+                  d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"
+                />
+              </svg>
+            </button>
+          </div>
+          <pre class="flex-1 overflow-auto px-6 py-4 text-sm md:text-base"><code id="status-dialog-code"></code></pre>
+        </div>
+      </dialog>
+    <% else %>
+      <article class="rounded-2xl border border-red-500/30 bg-[#12070a]/95 p-8 text-center shadow-2xl">
+        <div class="text-xl font-bold text-red-300">Server not responding</div>
+        <p class="mt-2 text-gray-300">
+          <span class="font-mono">{@query}</span>
+          doesn't exist, is offline or didn't answer within 5 seconds.
+        </p>
+        <p class="mt-1 text-sm text-gray-500">Checked in {@request_ms} ms.</p>
+      </article>
+    <% end %>
+  </main>
+
+  <%!-- API teaser --%>
+  <section :if={!@server} class="relative z-10 mx-auto -mt-10 max-w-6xl px-6 pb-20">
+    <div class="grid gap-6 rounded-2xl border border-white/10 bg-white/[0.03] p-8 md:grid-cols-2 md:items-center">
+      <div>
+        <h2 class="text-2xl font-bold">Free API</h2>
+        <p class="mt-2 text-gray-300">
+          Everything on this page is also available as JSON. No API key, no rate limits.
+        </p>
+        <a
+          href={~p"/api/docs"}
+          class="mt-5 inline-block rounded-xl bg-gradient-to-r from-[#5217D1] to-[#1740D1] px-5 py-2.5 font-semibold hover:opacity-90"
+        >
+          API documentation
+        </a>
+      </div>
+      <pre class="overflow-x-auto rounded-xl bg-black p-4 text-sm text-gray-200"><code>curl {url(~p"/api/status/hypixel.net")}</code></pre>
     </div>
-  </div>
+  </section>
+
+  <footer class="border-t border-white/10">
+    <div class="mx-auto flex max-w-6xl flex-wrap justify-between gap-2 px-6 py-6 text-sm text-gray-400">
+      <span>© {Date.utc_today().year} Server Api</span>
+      <a href="https://craftradar.pl/" target="_blank" rel="noopener" class="hover:text-white">
+        Minecraft server list and ranking — CraftRadar
+      </a>
+    </div>
+  </footer>
 </div>

@@ -1,6 +1,9 @@
 defmodule McServerApi.McsrvstatClient do
+  @behaviour McServerApi.ServerStatus
+
   alias McServerApi.ServerData
 
+  @impl McServerApi.ServerStatus
   def call(ip) do
     case HTTPoison.get("https://api.mcsrvstat.us/3/#{ip}") do
       {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->

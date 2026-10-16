@@ -30,3 +30,8 @@
 ## About The Project
 
 ![page view with server status](priv/static/images/readme/page-view-with-server-status.png)
+
+<!-- API -->
+## API
+
+`GET /api/status/:address` returns everything the server reveals about itself: status, players, MOTD (raw/clean/HTML), software, Query and Bedrock results, DNS and network info, EULA block status and, optionally, premium/no-premium mode. Every field is documented in the OpenAPI spec: browse it in Swagger UI at `/api/docs` or fetch the JSON from `/api/openapi`.

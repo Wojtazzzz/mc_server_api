@@ -12,6 +12,7 @@ defmodule McServerApiWeb.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+    plug OpenApiSpex.Plug.PutApiSpec, module: McServerApiWeb.ApiSpec
   end
 
   scope "/", McServerApiWeb do
@@ -20,10 +21,24 @@ defmodule McServerApiWeb.Router do
     get "/", PageController, :home
   end
 
-  # Other scopes may use custom stacks.
-  # scope "/api", McServerApiWeb do
-  #   pipe_through :api
-  # end
+  scope "/api", McServerApiWeb do
+    pipe_through :api
+
+    get "/status/:address", StatusController, :show
+  end
+
+  # OpenAPI spec and Swagger UI; plugs from OpenApiSpex, so outside the McServerApiWeb alias.
+  scope "/api" do
+    pipe_through :api
+
+    get "/openapi", OpenApiSpex.Plug.RenderSpec, []
+  end
+
+  scope "/api" do
+    pipe_through :browser
+
+    get "/docs", OpenApiSpex.Plug.SwaggerUI, path: "/api/openapi"
+  end
 
   # Enable Swoosh mailbox preview in development
   if Application.compile_env(:mc_server_api, :dev_routes) do
