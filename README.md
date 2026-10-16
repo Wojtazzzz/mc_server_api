@@ -9,6 +9,8 @@
   <span align="center">
     Check the status of any Minecraft server!
     <br />
+    <a href="https://status.craftradar.pl/">Preview</a>
+    ·
     <a href="https://github.com/Wojtazzzz/mc_server_api/">View Code</a>
     ·
     <a href="https://github.com/Wojtazzzz/mc_server_api/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
