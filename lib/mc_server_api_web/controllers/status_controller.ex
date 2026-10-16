@@ -60,7 +60,9 @@ defmodule McServerApiWeb.StatusController do
         {"The server answered", "application/json",
          %OpenApiSpex.Schema{oneOf: [Schemas.StatusResponse, Schemas.McsrvstatResponse]}},
       not_found: {"The server is offline or unreachable", "application/json", Schemas.Offline},
-      bad_request: {"Invalid address or client", "application/json", Schemas.Error}
+      bad_request: {"Invalid address or client", "application/json", Schemas.Error},
+      too_many_requests:
+        {"More than 30 requests per minute from this IP address", "text/html", nil}
     ]
   )
 

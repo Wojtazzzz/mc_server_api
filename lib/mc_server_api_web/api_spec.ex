@@ -18,7 +18,8 @@ defmodule McServerApiWeb.ApiSpec do
         description: """
         Status of any Minecraft server: our own Server List Ping (TCP), UDP Query, Bedrock ping,
         DNS and network details, Mojang's EULA blocklist and — optionally — premium/cracked mode.
-        No API key, no rate limits.
+        No API key needed. Requests are limited to 30 per minute per IP address (with a short burst
+        allowance); above that the API answers `429 Too Many Requests`.
         """
       },
       paths: Paths.from_router(McServerApiWeb.Router)
