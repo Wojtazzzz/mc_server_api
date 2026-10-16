@@ -22,3 +22,6 @@ config :phoenix, :plug_init_mode, :runtime
 # Enable helpful, but potentially expensive runtime checks
 config :phoenix_live_view,
   enable_expensive_runtime_checks: true
+
+# Tests ping fake servers on localhost, which production refuses (see Ping.Client.public_ip?/1).
+config :mc_server_api, allow_private_addresses: true

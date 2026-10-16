@@ -55,6 +55,7 @@ defmodule McServerApi.Ping.Client do
           | {:network, boolean()}
           | {:blocked, boolean()}
           | {:login, boolean()}
+          | {:allow_private, boolean()}
 
   @doc """
   Pings `address` (`host`, `host:port`, `ip:port` or `[ipv6]:port`).
@@ -64,7 +65,8 @@ defmodule McServerApi.Ping.Client do
 
   Options: `:timeout` — total time budget in ms (default #{@default_timeout});
   `:resolve_srv`, `:query`, `:bedrock`, `:network`, `:blocked` — set to `false` to skip that step;
-  `:login` — set to `true` to check online/offline mode with a login attempt (see `McServerApi.Ping.Login`).
+  `:login` — set to `true` to check online/offline mode with a login attempt (see `McServerApi.Ping.Login`);
+  `:allow_private` — ping loopback and private addresses too (refused by default, see `public_ip?/1`).
   """
   @spec status(String.t(), [option()]) :: {:ok, Response.t()} | {:error, term()}
   def status(address, opts \\ []) do
@@ -74,7 +76,7 @@ defmodule McServerApi.Ping.Client do
     with {:ok, host, port} <- parse_address(address),
          {connect_host, connect_port, srv} <-
            resolve(host, port, Keyword.get(opts, :resolve_srv, true)),
-         {:ok, ip} <- lookup_ip(connect_host) do
+         {:ok, ip} <- lookup_ip(connect_host, allow_private?(opts)) do
       dns_ms = now() - started
       extras = start_extras(host, connect_host, ip, connect_port, opts, deadline)
 
@@ -271,13 +273,51 @@ defmodule McServerApi.Ping.Client do
 
   defp ip_address?(host), do: match?({:ok, _ip}, :inet.parse_address(String.to_charlist(host)))
 
-  defp lookup_ip(host) do
+  defp allow_private?(opts),
+    do:
+      Keyword.get_lazy(opts, :allow_private, fn ->
+        Application.get_env(:mc_server_api, :allow_private_addresses, false)
+      end)
+
+  defp lookup_ip(host, allow_private) do
     host = String.to_charlist(host)
 
-    case :inet.getaddr(host, :inet) do
-      {:ok, ip} -> {:ok, ip}
-      {:error, _reason} -> :inet.getaddr(host, :inet6)
+    result =
+      case :inet.getaddr(host, :inet) do
+        {:ok, ip} -> {:ok, ip}
+        {:error, _reason} -> :inet.getaddr(host, :inet6)
+      end
+
+    # Checked on the resolved IP that is actually connected to, so a domain pointing at (or rebinding to)
+    # an internal address cannot turn the API into a scanner of this machine or its network.
+    with {:ok, ip} <- result do
+      if allow_private or public_ip?(ip), do: {:ok, ip}, else: {:error, :forbidden_address}
     end
+  end
+
+  @doc "False for loopback, private, link-local, carrier-grade NAT, multicast and other reserved addresses."
+  @spec public_ip?(:inet.ip_address()) :: boolean()
+  def public_ip?({a, b, _c, _d}) do
+    not (a in [0, 10, 127] or a >= 224 or
+           (a == 100 and b in 64..127) or
+           (a == 169 and b == 254) or
+           (a == 172 and b in 16..31) or
+           (a == 192 and b == 168) or
+           (a == 198 and b in 18..19))
+  end
+
+  def public_ip?({0, 0, 0, 0, 0, 0xFFFF, high, low}) do
+    import Bitwise
+    public_ip?({high >>> 8, high &&& 0xFF, low >>> 8, low &&& 0xFF})
+  end
+
+  def public_ip?({first, _, _, _, _, _, _, _} = ip) do
+    import Bitwise
+
+    not (ip in [{0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 1}] or
+           (first &&& 0xFE00) == 0xFC00 or
+           (first &&& 0xFFC0) == 0xFE80 or
+           (first &&& 0xFF00) == 0xFF00)
   end
 
   defp connect_and_ping(ip, host, port, deadline) do
