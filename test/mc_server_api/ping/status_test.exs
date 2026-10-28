@@ -16,6 +16,10 @@ defmodule McServerApi.Ping.StatusTest do
               %{
                 "name" => "§6★ Witaj na serwerze ★",
                 "id" => "00000000-0000-0000-0000-000000000000"
+              },
+              %{
+                "name" => "§e§lWILD§f§lNETWORK",
+                "id" => "84648a51-0af4-4867-a627-ead4c55ff4cb"
               }
             ]
           },

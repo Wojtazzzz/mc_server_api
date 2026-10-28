@@ -107,12 +107,13 @@ defmodule McServerApi.Ping.Status do
     sample
     |> Enum.flat_map(fn
       %{"name" => name} = player when is_binary(name) ->
-        [%{name: TextFormat.strip_codes(name), id: string_or_nil(player["id"])}]
+        [%{name: name, id: string_or_nil(player["id"])}]
 
       _ ->
         []
     end)
-    # Servers often fill the sample with decorative lines instead of player names.
+    # Servers often fill the sample with decorative lines instead of player names. Those are checked with their
+    # formatting codes: a real name has none, while "§e§lWILD§f§lNETWORK" would pass as "WILDNETWORK" without them.
     |> Enum.filter(&Regex.match?(~r/^[A-Za-z0-9_]{3,16}$/, &1.name))
     |> Enum.take(@max_sample)
   end
